@@ -1,22 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Jude's Web App Testing</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Tracker</title>
   <style>
-    body { text-align: center; font-family: sans-serif; margin-top: 100px; }
-    button { font-size: 24px; padding: 10px 20px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 1rem;
+      transform: scale(1.4);
+    }
+
+    label {
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+    }
   </style>
 </head>
 <body>
-  <h1 id="counter">0</h1>
-  <button onclick="increment()">Tap Me</button>
+  <div class="container">
+    <h1>🗓️ Daily To-Do</h1>
+    <ul>
+      <li>
+        <input type="checkbox" id="task1" />
+        <label for="task1">1 hr programming practice</label>
+      </li>
+      <li>
+        <input type="checkbox" id="task2" />
+        <label for="task2">1 hr German practice</label>
+      </li>
+      <li>
+        <input type="checkbox" id="task3" />
+        <label for="task3">30 min exercise/career work</label>
+      </li>
+    </ul>
+    <div class="footer" id="status"></div>
+  </div>
+
   <script>
-    let count = 0;
-    function increment() {
-      count++;
-      document.getElementById("counter").innerText = count;
+    const todayKey = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    const taskIds = ['task1', 'task2', 'task3'];
+
+    function loadTasks() {
+      const saved = JSON.parse(localStorage.getItem(todayKey)) || {};
+      taskIds.forEach(id => {
+        document.getElementById(id).checked = saved[id] || false;
+      });
+      updateStatus();
     }
+
+    function saveTasks() {
+      const status = {};
+      taskIds.forEach(id => {
+        status[id] = document.getElementById(id).checked;
+      });
+      localStorage.setItem(todayKey, JSON.stringify(status));
+      updateStatus();
+    }
+
+    function updateStatus() {
+      const allDone = taskIds.every(id => document.getElementById(id).checked);
+      const statusText = allDone ? "✅ All tasks complete!" : "⬜ Keep going!";
+      document.getElementById("status").textContent = statusText;
+    }
+
+    taskIds.forEach(id => {
+      document.getElementById(id).addEventListener('change', saveTasks);
+    });
+
+    loadTasks();
   </script>
 </body>
 </html>
